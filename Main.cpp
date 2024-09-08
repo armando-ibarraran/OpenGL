@@ -1,196 +1,250 @@
-#include <glad/glad.h>
-#include <GLFW/glfw3.h>
+#include <stdio.h>
+#include <stdlib.h>
 
-#include <iostream>
+#define MAX_STRING_SIZE 50  // Para estandarizar la longitud de los strings
 
-void framebuffer_size_callback(GLFWwindow* window, int width, int height);
-void processInput(GLFWwindow* window);
+// Estructuras usadas para almacenar la info
+typedef struct {
+    char calle[MAX_STRING_SIZE];
+    int numero_externo;
+    char codigo_postal[MAX_STRING_SIZE];
+    char ciudad[MAX_STRING_SIZE];
+    char pais[MAX_STRING_SIZE];
+} Direccion;
 
-// settings
-const unsigned int SCR_WIDTH = 800;
-const unsigned int SCR_HEIGHT = 600;
+typedef struct Empleado {
+    char nombres[MAX_STRING_SIZE];
+    char apellidos[MAX_STRING_SIZE];
+    int numero_ingreso;
+    Direccion direccion;
+    float salario;
+    char genero;
+    char estado_civil;
+    int numero_hijos;
+    struct Empleado* siguiente;
+} Empleado;
 
-const char* vertexShaderSource = "#version 330 core\n"
-"layout (location = 0) in vec3 aPos;\n"
-"void main()\n"
-"{\n"
-"   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
-"}\0";
-const char* fragmentShaderSource = "#version 330 core\n"
-"out vec4 FragColor;\n"
-"void main()\n"
-"{\n"
-"   FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
-"}\n\0";
+// Definición temporal de funciones
+Empleado* crear_empleado();
+int insertar_empleado(Empleado** lista);
+int borrar_empleado(Empleado** lista, int numero_ingreso);
+int num_empleados(Empleado* lista);
+Empleado* buscar_empleado(Empleado* lista, int numero_ingreso);
+void mostrar_empleado(Empleado* empleado);
+void los_empleados(Empleado* lista);
 
-int main()
-{
-    // glfw: initialize and configure
-    // ------------------------------
-    glfwInit();
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+int main() {
+    Empleado* lista = NULL;
+    int opcion, numero_ingreso;
 
-#ifdef __APPLE__
-    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-#endif
+    do {
+        printf("\nPrograma de nómina\n");
+        printf("1. Insertar empleado\n");
+        printf("2. Borrar empleado\n");
+        printf("3. Mostrar un empleado\n");
+        printf("4. Mostrar todos los empleados\n");
+        printf("5. Número de empleados\n");
+        printf("6. Salir\n");
+        printf("Seleccione una opción: ");
+        scanf_s("%d", &opcion);
 
-    // glfw window creation
-    // --------------------
-    GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "LearnOpenGL", NULL, NULL);
-    if (window == NULL)
-    {
-        std::cout << "Failed to create GLFW window" << std::endl;
-        glfwTerminate();
-        return -1;
-    }
-    glfwMakeContextCurrent(window);
-    glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+        printf("\n");
 
-    // glad: load all OpenGL function pointers
-    // ---------------------------------------
-    if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
-    {
-        std::cout << "Failed to initialize GLAD" << std::endl;
-        return -1;
-    }
+        switch (opcion) {
+        case 1: {
+            if (insertar_empleado(&lista)) {
+                printf("Empleado insertado correctamente.\n");
+            }
+            else {
+                printf("Error al insertar empleado.\n");
+            }
+            break;
+        }
+        case 2: {
+            printf("Ingrese el número de ingreso del empleado a borrar: ");
+            scanf_s("%d", &numero_ingreso);
+            if (borrar_empleado(&lista, numero_ingreso)) {
+                printf("Empleado borrado correctamente.\n");
+            }
+            else {
+                printf("Empleado no encontrado.\n");
+            }
+            break;
+        }
+        case 3: {
+            // Primero busca el epmpleado, si existe, muéstralo
+            printf("Ingrese el número de ingreso del empleado a mostrar: ");
+            scanf_s("%d", &numero_ingreso);
+            Empleado* emp = buscar_empleado(lista, numero_ingreso);
+            if (emp != NULL) {
+                mostrar_empleado(emp);
+            }
+            else {
+                printf("Empleado no encontrado.\n");
+            }
+            break;
+        }
+        case 4: {
+            los_empleados(lista);
+            break;
+        }
+        case 5: {
+            printf("Número de empleados: %d\n", num_empleados(lista));
+            break;
+        }
+        case 6: {
+            printf("Saliendo del programa.\n");
+            break;
+        }
+        default: {
+            printf("Opción no válida.\n");
+            break;
+        }
+        }
+    } while (opcion != 6);
 
-
-    // build and compile our shader program
-    // ------------------------------------
-    // vertex shader
-    unsigned int vertexShader = glCreateShader(GL_VERTEX_SHADER);
-    glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
-    glCompileShader(vertexShader);
-    // check for shader compile errors
-    int success;
-    char infoLog[512];
-    glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
-    if (!success)
-    {
-        glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
-        std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog << std::endl;
-    }
-    // fragment shader
-    unsigned int fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
-    glCompileShader(fragmentShader);
-    // check for shader compile errors
-    glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
-    if (!success)
-    {
-        glGetShaderInfoLog(fragmentShader, 512, NULL, infoLog);
-        std::cout << "ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n" << infoLog << std::endl;
-    }
-    // link shaders
-    unsigned int shaderProgram = glCreateProgram();
-    glAttachShader(shaderProgram, vertexShader);
-    glAttachShader(shaderProgram, fragmentShader);
-    glLinkProgram(shaderProgram);
-    // check for linking errors
-    glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
-    if (!success) {
-        glGetProgramInfoLog(shaderProgram, 512, NULL, infoLog);
-        std::cout << "ERROR::SHADER::PROGRAM::LINKING_FAILED\n" << infoLog << std::endl;
-    }
-    glDeleteShader(vertexShader);
-    glDeleteShader(fragmentShader);
-
-    // set up vertex data (and buffer(s)) and configure vertex attributes
-    // ------------------------------------------------------------------
-    float vertices[] = {
-         0.5f,  0.5f, 0.0f,  // top right
-         0.5f, -0.5f, 0.0f,  // bottom right
-        -0.5f, -0.5f, 0.0f,  // bottom left
-        -0.5f,  0.5f, 0.0f   // top left 
-    };
-    unsigned int indices[] = {  // note that we start from 0!
-        0, 1, 3,  // first Triangle
-        1, 2, 3   // second Triangle
-    };
-    unsigned int VBO, VAO, EBO;
-    glGenVertexArrays(1, &VAO);
-    glGenBuffers(1, &VBO);
-    glGenBuffers(1, &EBO);
-    // bind the Vertex Array Object first, then bind and set vertex buffer(s), and then configure vertex attributes(s).
-    glBindVertexArray(VAO);
-
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-    glEnableVertexAttribArray(0);
-
-    // note that this is allowed, the call to glVertexAttribPointer registered VBO as the vertex attribute's bound vertex buffer object so afterwards we can safely unbind
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-    // remember: do NOT unbind the EBO while a VAO is active as the bound element buffer object IS stored in the VAO; keep the EBO bound.
-    //glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-
-    // You can unbind the VAO afterwards so other VAO calls won't accidentally modify this VAO, but this rarely happens. Modifying other
-    // VAOs requires a call to glBindVertexArray anyways so we generally don't unbind VAOs (nor VBOs) when it's not directly necessary.
-    glBindVertexArray(0);
-
-
-    // uncomment this call to draw in wireframe polygons.
-    //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-
-    // render loop
-    // -----------
-    while (!glfwWindowShouldClose(window))
-    {
-        // input
-        // -----
-        processInput(window);
-
-        // render
-        // ------
-        glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT);
-
-        // draw our first triangle
-        glUseProgram(shaderProgram);
-        glBindVertexArray(VAO); // seeing as we only have a single VAO there's no need to bind it every time, but we'll do so to keep things a bit more organized
-        //glDrawArrays(GL_TRIANGLES, 0, 6);
-        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-        // glBindVertexArray(0); // no need to unbind it every time 
-
-        // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
-        // -------------------------------------------------------------------------------
-        glfwSwapBuffers(window);
-        glfwPollEvents();
-    }
-
-    // optional: de-allocate all resources once they've outlived their purpose:
-    // ------------------------------------------------------------------------
-    glDeleteVertexArrays(1, &VAO);
-    glDeleteBuffers(1, &VBO);
-    glDeleteBuffers(1, &EBO);
-    glDeleteProgram(shaderProgram);
-
-    // glfw: terminate, clearing all previously allocated GLFW resources.
-    // ------------------------------------------------------------------
-    glfwTerminate();
     return 0;
 }
 
-// process all input: query GLFW whether relevant keys are pressed/released this frame and react accordingly
-// ---------------------------------------------------------------------------------------------------------
-void processInput(GLFWwindow* window)
-{
-    if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
-        glfwSetWindowShouldClose(window, true);
+Empleado* crear_empleado() {
+    Empleado* nuevo = (Empleado*)malloc(sizeof(Empleado)); // Aparta espacio en memoria para este nuevo empleado
+    if (nuevo == NULL) {
+        printf("Error: No hay memoria suficiente para almacenar un nuevo empleado.\n");
+        return NULL;
+    }
+
+    // Pide al usuario que teclee los datos
+    printf("Ingrese los datos del empleado.\n");
+    printf("Nombres: ");
+    scanf_s(" %[^\n]", nuevo->nombres, (unsigned int)MAX_STRING_SIZE); // strings ya son apuntador, no necesitamos el ampersand
+    printf("Apellidos: ");
+    scanf_s(" %[^\n]", nuevo->apellidos, (unsigned int)MAX_STRING_SIZE);
+    printf("Número de ingreso: ");
+    scanf_s("%d", &nuevo->numero_ingreso);
+    printf("Dirección: \n");
+    printf("\tCalle o avenida: ");
+    scanf_s(" %[^\n]", nuevo->direccion.calle, (unsigned int)MAX_STRING_SIZE);
+    printf("\tNúmero externo: ");
+    scanf_s("%d", &nuevo->direccion.numero_externo);
+    printf("\tCódigo postal: ");
+    scanf_s(" %[^\n]", nuevo->direccion.codigo_postal, (unsigned int)MAX_STRING_SIZE);
+    printf("\tCiudad: ");
+    scanf_s(" %[^\n]", nuevo->direccion.ciudad, (unsigned int)MAX_STRING_SIZE);
+    printf("\tPaís: ");
+    scanf_s(" %[^\n]", nuevo->direccion.pais, (unsigned int)MAX_STRING_SIZE);
+    printf("Salario: ");
+    scanf_s("%f", &nuevo->salario);
+    printf("Género (M/F): ");
+    scanf_s(" %c", &nuevo->genero, 1);
+    printf("Estado civil (S/C/D): ");
+    scanf_s(" %c", &nuevo->estado_civil, 1);
+    printf("Número de hijos: ");
+    scanf_s("%d", &nuevo->numero_hijos);
+
+    nuevo->siguiente = NULL;
+    return nuevo;
 }
 
-// glfw: whenever the window size changed (by OS or user resize) this callback function executes
-// ---------------------------------------------------------------------------------------------
-void framebuffer_size_callback(GLFWwindow* window, int width, int height)
-{
-    // make sure the viewport matches the new window dimensions; note that width and 
-    // height will be significantly larger than specified on retina displays.
-    glViewport(0, 0, width, height);
+int insertar_empleado(Empleado** lista) {
+    Empleado* nuevo = crear_empleado();
+    if (nuevo == NULL) {
+        return 0; // No hubo memoria
+    }
+
+    
+    if (*lista == NULL || (*lista)->numero_ingreso > nuevo->numero_ingreso) {
+        // Caso en que el empleado debe or en el "head" de la lista
+        nuevo->siguiente = *lista;
+        *lista = nuevo;
+    }
+    else {
+        Empleado* actual = *lista;
+        // Itera hasta encontrar el lugar que le corresponde a este empleado (según su número de ingreso de mayor a menor)
+        while (actual->siguiente != NULL && actual->siguiente->numero_ingreso < nuevo->numero_ingreso) {
+            actual = actual->siguiente;
+        }
+        nuevo->siguiente = actual->siguiente;
+        actual->siguiente = nuevo;
+    }
+
+    return 1;
+}
+
+int borrar_empleado(Empleado** lista, int numero_ingreso) {
+    if (*lista == NULL) {
+        return 0; // Lista vacía
+    }
+
+    Empleado* actual = *lista;
+    Empleado* anterior = NULL;
+
+    // Itera sobre la lista buscando al empleado
+    while (actual != NULL && actual->numero_ingreso != numero_ingreso) {
+        anterior = actual;
+        actual = actual->siguiente;
+    }
+
+    // Caso en que se llega al fin de la lista (no se encontró el empleado)
+    if (actual == NULL) {
+        return 0;
+    }
+
+    if (anterior == NULL) {
+        // Caso en que el empleado a borrar está en el "head"
+        *lista = actual->siguiente;
+    }
+    else {
+        // Sáltate el empleado actual en la lista
+        anterior->siguiente = actual->siguiente;
+    }
+
+    free(actual); // Borra al empleado actual de la memoria
+    return 1;
+}
+
+int num_empleados(Empleado* lista) {
+    int contador = 0;
+    // Itera con un contador sobre la lista
+    while (lista != NULL) {
+        contador++;
+        lista = lista->siguiente;
+    }
+    return contador;
+}
+
+Empleado* buscar_empleado(Empleado* lista, int numero_ingreso) {
+    while (lista != NULL) {
+        // si el empleado apuntado no es nulo, checa si es el deseado
+        if (lista->numero_ingreso == numero_ingreso) {
+            return lista;
+        }
+        lista = lista->siguiente;
+    }
+    return NULL;
+}
+
+void mostrar_empleado(Empleado* empleado) {
+    if (empleado != NULL) {
+        printf("\n--- Información del Empleado ---\n");
+        printf("Nombres: %s\n", empleado->nombres);
+        printf("Apellidos: %s\n", empleado->apellidos);
+        printf("Número de ingreso: %d\n", empleado->numero_ingreso);
+        printf("Dirección: %s, %d, %s, %s, %s\n", empleado->direccion.calle, empleado->direccion.numero_externo, empleado->direccion.codigo_postal, empleado->direccion.ciudad, empleado->direccion.pais);
+        printf("Salario: %.2f\n", empleado->salario);
+        printf("Género: %c\n", empleado->genero);
+        printf("Estado Civil: %c\n", empleado->estado_civil);
+        printf("Número de hijos: %d\n", empleado->numero_hijos);
+    }
+}
+
+void los_empleados(Empleado* lista) {
+    if (lista == NULL) {
+        printf("No hay empleados en la lista.\n");
+    }
+    else {
+        while (lista != NULL) {
+            mostrar_empleado(lista);
+            lista = lista->siguiente;
+        }
+    }
 }
