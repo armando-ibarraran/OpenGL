@@ -10,6 +10,9 @@
 #include <GLFW/glfw3.h>
 #include <stdio.h>
 
+#include <ctime>
+#include <sys\timeb.h> 
+
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow* window);
@@ -105,38 +108,45 @@ int main()
     // -------------------------------------------------------------------------------------------
     ourShader.use();
     ourShader.setInt("texture", 0);
+    struct timeb start, end;
+    unsigned short elapse = 0, t1, t2;
     float inc = 0;
-
+    ftime(&start);
+    t1 = start.millitm;
     // render loop
     while (!glfwWindowShouldClose(window))
     {
         // keyboard input
         processInput(window);
+        ftime(&end);
+        t2 = end.millitm;
+        elapse = t2 - t1;
+        if (elapse > 10) {
+            t1 = t2;
+            // render
+            glClearColor(0.4f, 0.4f, 0.4f, 1.0f);
+            glClear(GL_COLOR_BUFFER_BIT);
 
-        // render
-        glClearColor(0.4f, 0.4f, 0.4f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT);
+            // bind Texture
+            glActiveTexture(GL_TEXTURE0);
+            glBindTexture(GL_TEXTURE_2D, texture);
 
-        // bind Texture
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, texture);
+            // create transformations
+            inc = inc + .01;
+            glm::mat4 transform = glm::mat4(1.0f); // make sure to initialize matrix to identity matrix first
+            transform = glm::translate(transform, glm::vec3(0.5f, -0.5f, 0.0f));
+            transform = glm::rotate(transform, (float)inc, glm::vec3(0.0f, 0.0f, 1.0f));
 
-        // create transformations
-        inc = inc + 0.0001;
-        glm::mat4 transform = glm::mat4(1.0f); // make sure to initialize matrix to identity matrix first
-        transform = glm::translate(transform, glm::vec3(0.5f, -0.5f, 0.0f));
-        transform = glm::rotate(transform, inc, glm::vec3(0.0f, 0.0f, 1.0f));
+            // render container
+            ourShader.use();
+            unsigned int transformLoc = glGetUniformLocation(ourShader.ID, "transform");
+            glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(transform));
 
-        // render container
-        ourShader.use();
-        unsigned int transformLoc = glGetUniformLocation(ourShader.ID, "transform");
-        glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(transform));
-
-        glBindVertexArray(VAO);
-        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-
+            glBindVertexArray(VAO);
+            glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+            glfwSwapBuffers(window);
+        }
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
-        glfwSwapBuffers(window);
         glfwPollEvents();
     }
 
