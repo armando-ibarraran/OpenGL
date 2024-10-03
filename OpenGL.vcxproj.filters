@@ -24,5 +24,11 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\..\..\..\OpenGL\glfw-3.4.bin.WIN64\lib-vc2022\glfw3.dll" />
+    <None Include="color.vs" />
+    <None Include="texture.vs" />
+    <None Include="white.fs" />
+    <None Include="gold.fs" />
+    <None Include="blue.fs" />
+    <None Include="texture.fs" />
   </ItemGroup>
 </Project>
