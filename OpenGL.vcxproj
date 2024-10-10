@@ -139,8 +139,8 @@ gdi32.lib
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\..\..\..\OpenGL\glfw-3.4.bin.WIN64\lib-vc2022\glfw3.dll" />
-    <None Include="6.3.coordinate_systems.fs" />
-    <None Include="6.3.coordinate_systems.vs" />
+    <None Include="7.3.camera.fs" />
+    <None Include="7.3.camera.vs" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
