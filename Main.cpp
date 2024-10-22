@@ -360,8 +360,8 @@ void drawWhiteCurve(glm::mat4 transform) {
     //draw the straight segment
     float startX = -0.727f;
     float endX = -0.998f;
-    float startY = -0.816f;  // Corresponding y-coordinate at startX
-    float endY = -0.816f;    // Corresponding y-coordinate at endX
+    float startY = -0.816f;  
+    float endY = -0.816f;    
 
     int n = 7;  // Number of circles you want to paint
     paintCirclesInLine(startX, endX, startY, endY, n, lineWidth, transform);
@@ -419,7 +419,7 @@ void draw4th(unsigned int VAOs[], glm::mat4 transform) {
     transform = glm::translate(transform, glm::vec3(-0.5f,0.5f,0.0f));
     transform = glm::scale(transform, glm::vec3(0.5f, 0.5f, 1.0f));
 
-    // display on 4th cuadrants
+    // display on the 4 cuadrants
     draw16th(VAOs, transform);
     transform = glm::rotate(transform, glm::pi<float>() / 2, glm::vec3(0.0f, 0.0f, 1.0f));
     draw16th(VAOs, transform);
@@ -433,7 +433,7 @@ void displayMainPattern(unsigned int VAOs[]) {
     // Initialize transformation
     glm::mat4 transform = glm::mat4(1.0f);
 
-    // display on 4th cuadrants
+    // display on the 4 cuadrants
     draw4th(VAOs, transform);
     transform = glm::rotate(transform, glm::pi<float>() / 2, glm::vec3(0.0f, 0.0f, 1.0f));
     draw4th(VAOs, transform);
@@ -449,7 +449,6 @@ void draw8thFlower(unsigned int VAOs[], glm::mat4 transform) {
     unsigned int glossyBlue = loadTexture(blue2Path);
     unsigned int glossyGrey = loadTexture(grey1Path);
     Shader textureShader("texture.vs", "texture.fs");
-
 
     // Scale and translate to center
     transform = glm::translate(transform, glm::vec3(-0.25f, 0.25f, 0.0f));
@@ -491,7 +490,7 @@ void drawFlower(unsigned int VAOs[]) {
     // Initialize transformation matrix=x
     glm::mat4 transform = glm::mat4(1.0f);
 
-    // display on 4 cuadrants
+    // display on the 4 cuadrants
     draw4thFlower(VAOs, transform);
     transform = glm::rotate(transform, glm::pi<float>() / 2, glm::vec3(0.0f, 0.0f, 1.0f));
     draw4thFlower(VAOs, transform);
@@ -503,11 +502,9 @@ void drawFlower(unsigned int VAOs[]) {
 
 
 void dibujaBaldosa(GLFWwindow* window) {
-
     // =======================================================================
     // Set up buffers
     // =======================================================================
-
     unsigned int VBOs[7], VAOs[7], EBOs[7];
     glGenVertexArrays(7, VAOs);
     glGenBuffers(7, VBOs);
@@ -618,11 +615,10 @@ void dibujaBaldosa(GLFWwindow* window) {
     // =======================================================================
     // Render
     // =======================================================================
-
     // background color
     glClearColor(0.345f, 0.372f, 0.412f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
-
+    // render de baldosa
     displayMainPattern(VAOs);
     drawFlower(VAOs);
 
