@@ -139,10 +139,10 @@ gdi32.lib
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\..\..\..\OpenGL\glfw-3.4.bin.WIN64\lib-vc2022\glfw3.dll" />
-    <None Include="1.colors.fs" />
-    <None Include="1.colors.vs" />
-    <None Include="1.light_cube.fs" />
-    <None Include="1.light_cube.vs" />
+    <None Include="2.1.basic_lighting.fs" />
+    <None Include="2.1.basic_lighting.vs" />
+    <None Include="2.1.light_cube.fs" />
+    <None Include="2.1.light_cube.vs" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
