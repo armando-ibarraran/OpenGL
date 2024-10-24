@@ -170,9 +170,13 @@ int main()
         glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+        // Set light intensity:
+        float alfa = glm::sin((float) glfwGetTime())*1.5f + 1.5f;
+
         // be sure to activate shader when setting uniforms/drawing objects
         lightingShader.use();
         lightingShader.setVec3("objectColor", 1.0f, 0.5f, 0.31f);
+        lightingShader.setFloat("alfa", alfa);
         lightingShader.setVec3("lightColor", 1.0f, 1.0f, 1.0f);
 
         // view/projection transformations
