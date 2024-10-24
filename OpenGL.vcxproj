@@ -104,7 +104,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>C:\OpenGL\glm-1.0.1-light;C:\OpenGL\texturas;C:\OpenGL\shaders;C:\OpenGL\glad\include;C:\OpenGL\glfw-3.4.bin.WIN64\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\OpenGL\includes;C:\OpenGL\glm-1.0.1-light;C:\OpenGL\texturas;C:\OpenGL\shaders;C:\OpenGL\glad\include;C:\OpenGL\glfw-3.4.bin.WIN64\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -139,8 +139,10 @@ gdi32.lib
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\..\..\..\OpenGL\glfw-3.4.bin.WIN64\lib-vc2022\glfw3.dll" />
-    <None Include="7.3.camera.fs" />
-    <None Include="7.3.camera.vs" />
+    <None Include="1.colors.fs" />
+    <None Include="1.colors.vs" />
+    <None Include="1.light_cube.fs" />
+    <None Include="1.light_cube.vs" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
