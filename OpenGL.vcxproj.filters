@@ -24,9 +24,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\..\..\..\OpenGL\glfw-3.4.bin.WIN64\lib-vc2022\glfw3.dll" />
-    <None Include="2.1.basic_lighting.fs" />
-    <None Include="2.1.basic_lighting.vs" />
-    <None Include="2.1.light_cube.fs" />
-    <None Include="2.1.light_cube.vs" />
+    <None Include="transform.vs" />
+    <None Include="color.fs" />
+    <None Include="posLinearAnim.vs" />
+    <None Include="colorLinearAnim.fs" />
   </ItemGroup>
 </Project>
