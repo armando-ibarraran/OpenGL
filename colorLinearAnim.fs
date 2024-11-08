@@ -8,5 +8,5 @@ uniform float alpha;
 
 void main()
 {
-	FragColor = alpha*startColor + (1-alpha)*endColor;
+	FragColor = (1-alpha)*startColor + alpha*endColor;
 }

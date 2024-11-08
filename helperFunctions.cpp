@@ -21,6 +21,10 @@ void drawFerrisWheelPod(float w, float h, float x, float y, glm::mat4 transform,
 void drawFerrisWheel(float x, float y, float r, glm::mat4 transform, Shader shader);
 std::vector<float> getEllipsesVertices(float a, float b, float x, float y, int numSegments);
 void bindAnimVector(unsigned int VAO, unsigned int VBO, std::vector<float> vector);
+void drawWall(glm::mat4 transform, Shader shader);
+void drawBarTop(glm::mat4 transform, Shader shader);
+void drawBarBottom(glm::mat4 transform, Shader shader); glm::mat4 shearY(float k);
+glm::mat4 shearY(float k);
 
 // Function to create and draw a filled ellipse (of the form (x/a)^2 + (y/b)^2 = 1) centered at (x,y)
 void drawFilledEllipse(float a, float b, float x, float y, int numSegments, glm::mat4 transform, Shader shader) {
@@ -312,4 +316,155 @@ void bindAnimVector(unsigned int VAO, unsigned int VBO, std::vector<float> vecto
     glEnableVertexAttribArray(0);
     glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
     glEnableVertexAttribArray(1);
+}
+
+
+// Draws the wall
+// If alpha = 0, the wall is opne, if alpha = 1, it is closed and every step in between
+void drawWall(float alpha, glm::mat4 transform, Shader shader) {
+
+    float vertices[] = {
+        1.0f, -0.6f, 0.0f,
+        1.0f, -0.35f, 0.0f,
+        0.15f, -0.6f, 0.0f,
+        0.15f, -0.35f, 0.0f,
+        // 2nd
+         -1.0f, -0.6f, 0.0f,
+        -1.0f, -0.35f, 0.0f,
+        -0.15f * (1 - alpha) + 0.15f * alpha, -0.6f, 0.0f,
+        -0.15f * (1 - alpha) + 0.15f * alpha, -0.35f, 0.0f
+    };
+
+    unsigned int indices[] = {
+        0,1,2,
+        2,3,1,
+        4,5,6,
+        6,7,5
+    };
+
+    // Create and bind VAO, VBO and EBO
+    unsigned int VAO, VBO, EBO;
+    glGenVertexArrays(1, &VAO);
+    glGenBuffers(1, &VBO);
+    glGenBuffers(1, &EBO);
+
+    glBindVertexArray(VAO);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
+
+    // Translate the polygon to the desired coordinates without affecting other previously defined transformations
+    shader.setMat4("transform", transform);
+
+    // Draw the polygon as a triangle fan
+    glDrawElements(GL_TRIANGLES, 12, GL_UNSIGNED_INT, 0);
+
+    // Clean up and unbind
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindVertexArray(0);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
+    // Delete the VAO and VBO after drawing since they are no longer needed
+    glDeleteVertexArrays(1, &VAO);
+    glDeleteBuffers(1, &VBO);
+}
+
+// Draws the height measuring bar top
+void drawBarTop(glm::mat4 transform, Shader shader) {
+
+    float vertices[] = {
+        0.45f, -0.25f, 0.0f,
+        0.35f, -0.25f, 0.0f,
+        0.35f, -0.4f, 0.0f,
+        0.45f, -0.4f, 0.0f
+    };
+
+    unsigned int indices[] = {
+        0,1,2,
+        3,2,0
+    };
+
+    // Create and bind VAO, VBO and EBO
+    unsigned int VAO, VBO, EBO;
+    glGenVertexArrays(1, &VAO);
+    glGenBuffers(1, &VBO);
+    glGenBuffers(1, &EBO);
+
+    glBindVertexArray(VAO);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
+
+    // Translate the polygon to the desired coordinates without affecting other previously defined transformations
+    shader.setMat4("transform", transform);
+
+    // Draw the polygon as a triangle fan
+    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+
+    // Clean up and unbind
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindVertexArray(0);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
+    // Delete the VAO and VBO after drawing since they are no longer needed
+    glDeleteVertexArrays(1, &VAO);
+    glDeleteBuffers(1, &VBO);
+}
+
+// Draws the height measuring bar bottom
+void drawBarBottom(glm::mat4 transform, Shader shader) {
+
+    float vertices[] = {
+       0.35f, -0.4f, 0.0f,
+       0.45f, -0.4f, 0.0f,
+       0.35f, -0.7f, 0.0f,
+       0.45f, -0.7f, 0.0f
+    };
+
+    unsigned int indices[] = {
+        0,1,2,
+        2,3,1
+    };
+
+    // Create and bind VAO, VBO and EBO
+    unsigned int VAO, VBO, EBO;
+    glGenVertexArrays(1, &VAO);
+    glGenBuffers(1, &VBO);
+    glGenBuffers(1, &EBO);
+
+    glBindVertexArray(VAO);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
+
+    // Translate the polygon to the desired coordinates without affecting other previously defined transformations
+    shader.setMat4("transform", transform);
+
+    // Draw the polygon as a triangle fan
+    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+
+    // Clean up and unbind
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindVertexArray(0);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
+    // Delete the VAO and VBO after drawing since they are no longer needed
+    glDeleteVertexArrays(1, &VAO);
+    glDeleteBuffers(1, &VBO);
+}
+
+// Función para crear una matriz de inclinacion en el eje Y respecto al eje X
+glm::mat4 shearY(float k) {
+    glm::mat4 shearMatrix = glm::mat4(1.0f); // Matriz identidad
+    shearMatrix[1][0] = k; // Modificar el elemento para inclinacion en Y respecto a X
+    return shearMatrix;
 }

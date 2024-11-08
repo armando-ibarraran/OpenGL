@@ -25,5 +25,9 @@ void drawFerrisWheelPod(float w, float h, float x, float y, glm::mat4 transform,
 void drawFerrisWheel(float x, float y, float r, glm::mat4 transform, Shader shader);
 std::vector<float> getEllipsesVertices(float a, float b, float x, float y, int numSegments);
 void bindAnimVector(unsigned int VAO, unsigned int VBO, std::vector<float> vector);
+void drawWall(float alpha, glm::mat4 transform, Shader shader);
+void drawBarTop(glm::mat4 transform, Shader shader);
+void drawBarBottom(glm::mat4 transform, Shader shader);
+glm::mat4 shearY(float k);
 
 #endif

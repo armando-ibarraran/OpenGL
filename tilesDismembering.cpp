@@ -27,7 +27,7 @@ void dismemberTile(GLFWwindow* window) {
     int numCharacters = 3;
     bool animEnded = false;
     bool waitOver;
-    float alpha = 1.0f;
+    float alpha = 0.0f;
     int ratio = totalVertices / (3.0f * numOutTriangles);
     int index;
     float ferrisX = -0.45f, ferrisY = 0.45f, ferrisR = 0.5f;
@@ -142,7 +142,7 @@ void dismemberTile(GLFWwindow* window) {
     transformShader.use();
     drawFerrisWheel(0, 0, 0.8, glm::mat4(1.0f), transformShader);
     animShader.use();
-    animShader.setFloat("alpha", 1.0f);
+    animShader.setFloat("alpha", 0.0f);
     glBindVertexArray(VAOs[0]);
     glDrawArrays(GL_TRIANGLES, 0, totalVertices * 3);
     glBindVertexArray(VAOs[1]);
@@ -173,15 +173,15 @@ void dismemberTile(GLFWwindow* window) {
             glClear(GL_COLOR_BUFFER_BIT);
 
             // The linear increment used to animate
-            alpha -= 0.01;
-            alpha = fmax(0, alpha);
+            alpha += 0.01;
+            alpha = fmin(1, alpha);
 
             // Draw the ferris wheel
             transformShader.use();
             transform = glm::mat4(1.0f);
-            transform = glm::translate(transform, glm::vec3((1 - alpha) * ferrisX, (1 - alpha) * ferrisY, 0.0f));
-            transform = glm::rotate(transform, 0.25f * alpha * 2 * glm::pi<float>(), glm::vec3(0.0f, 0.0f, 1.0f));
-            drawFerrisWheel(0.0f, 0.0f, alpha * 0.8f + (1 - alpha) * ferrisR, transform, transformShader);
+            transform = glm::translate(transform, glm::vec3(alpha * ferrisX, alpha * ferrisY, 0.0f));
+            transform = glm::rotate(transform, 0.25f * (1-alpha) * 2 * glm::pi<float>(), glm::vec3(0.0f, 0.0f, 1.0f));
+            drawFerrisWheel(0.0f, 0.0f, (1-alpha) * 0.8f + alpha * ferrisR, transform, transformShader);
             // Draw the corner triangles
             animShader.use();
             animShader.setVec4("startColor", 244 / 255.0f, 177 / 255.0f, 84 / 255.0f, 1.0f);
@@ -206,7 +206,7 @@ void dismemberTile(GLFWwindow* window) {
 
             glfwSwapBuffers(window);
         }
-        if (alpha <= 0) {
+        if (alpha >= 1) {
             animEnded = true;
         }
 
