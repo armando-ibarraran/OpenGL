@@ -135,7 +135,9 @@ gdi32.lib
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\..\..\OpenGL\glad\src\glad.c" />
+    <ClCompile Include="helperFunctions.cpp" />
     <ClCompile Include="Main.cpp" />
+    <ClCompile Include="tilesDismembering.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\..\..\..\OpenGL\glfw-3.4.bin.WIN64\lib-vc2022\glfw3.dll" />
@@ -143,6 +145,14 @@ gdi32.lib
     <None Include="posLinearAnim.vs" />
     <None Include="color.fs" />
     <None Include="transform.vs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="helperFunctions.h" />
+    <ClInclude Include="resource.h" />
+    <ClInclude Include="tilesDismembering.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="OpenGL.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

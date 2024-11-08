@@ -1,10 +1,10 @@
 #version 330 core
-layout (location = 0) in vec2 aPos;
-layout (location = 1) in vec2 targetPos;
+layout (location = 0) in vec3 aPos;
+layout (location = 1) in vec3 targetPos;
 
 uniform float alpha;
 
 void main()
 {
-	gl_Position = alpha * vec4(aPos, 0.0, 1.0) + (1-alpha) * vec4(targetPos, 0.0, 1.0) ;
+	gl_Position =  alpha * vec4(aPos, 1.0) + (1-alpha) * vec4(targetPos, 1.0) ;
 }
