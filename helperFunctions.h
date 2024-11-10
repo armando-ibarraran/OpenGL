@@ -29,5 +29,6 @@ void drawWall(float alpha, glm::mat4 transform, Shader shader);
 void drawBarTop(glm::mat4 transform, Shader shader);
 void drawBarBottom(glm::mat4 transform, Shader shader);
 glm::mat4 shearY(float k);
+std::vector<float> jumpTrajectory(float x0, float y0, float xf, float yf, float tf, float alpha);
 
 #endif

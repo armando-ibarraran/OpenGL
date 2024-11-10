@@ -16,18 +16,18 @@
 #include "helperFunctions.h"
 
 
-void dismemberTile(GLFWwindow* window);
+void dismemberTile(GLFWwindow* window, bool reverse);
 std::vector<float> outerTrianglesVertices(int numTriangles, int numVertices);
 
 // Function that animates the decomposition of the tile to build the start of the story 
-void dismemberTile(GLFWwindow* window) {
+void dismemberTile(GLFWwindow* window, bool reverse) {
     int numTriangles = 72; // Number of triangles that we will use to build our ellipses
     int numOutTriangles = 24; // Number of triangles in the outer circle
     int totalVertices = numTriangles * 3;
     int numCharacters = 3;
     bool animEnded = false;
     bool waitOver;
-    float alpha = 0.0f;
+    float alpha;
     int ratio = totalVertices / (3.0f * numOutTriangles);
     int index;
     float ferrisX = -0.45f, ferrisY = 0.45f, ferrisR = 0.5f;
@@ -134,6 +134,12 @@ void dismemberTile(GLFWwindow* window) {
     unsigned short elapse = 0, t1, t2;
     ftime(&start);
     t1 = start.millitm;
+    if (!reverse) {
+        alpha = 0.0f;
+    }
+    else {
+        alpha = 1.0f;
+    }
 
     // Show the start for a couple of miliseconds
     glClearColor(43 / 255.0f, 36 / 255.0f, 80 / 255.0f, 1.0f);
@@ -142,7 +148,7 @@ void dismemberTile(GLFWwindow* window) {
     transformShader.use();
     drawFerrisWheel(0, 0, 0.8, glm::mat4(1.0f), transformShader);
     animShader.use();
-    animShader.setFloat("alpha", 0.0f);
+    animShader.setFloat("alpha", alpha);
     glBindVertexArray(VAOs[0]);
     glDrawArrays(GL_TRIANGLES, 0, totalVertices * 3);
     glBindVertexArray(VAOs[1]);
@@ -173,8 +179,14 @@ void dismemberTile(GLFWwindow* window) {
             glClear(GL_COLOR_BUFFER_BIT);
 
             // The linear increment used to animate
-            alpha += 0.01;
-            alpha = fmin(1, alpha);
+            if (!reverse) {
+                alpha += 0.01;
+                alpha = fmin(1, alpha);
+            }
+            else {
+                alpha -= 0.01;
+                alpha = fmax(0.0f, alpha);
+            }
 
             // Draw the ferris wheel
             transformShader.use();
@@ -206,7 +218,7 @@ void dismemberTile(GLFWwindow* window) {
 
             glfwSwapBuffers(window);
         }
-        if (alpha >= 1) {
+        if ((alpha >= 1 && !reverse) || (alpha <= 0 && reverse)) {
             animEnded = true;
         }
 

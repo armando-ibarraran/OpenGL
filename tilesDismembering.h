@@ -20,7 +20,7 @@
 #include "helperFunctions.h"
 
 
-void dismemberTile(GLFWwindow* window);
+void dismemberTile(GLFWwindow* window, bool reverse);
 std::vector<float> outerTrianglesVertices(int numTriangles, int numVertices);
 
 #endif

@@ -21,10 +21,11 @@ void drawFerrisWheelPod(float w, float h, float x, float y, glm::mat4 transform,
 void drawFerrisWheel(float x, float y, float r, glm::mat4 transform, Shader shader);
 std::vector<float> getEllipsesVertices(float a, float b, float x, float y, int numSegments);
 void bindAnimVector(unsigned int VAO, unsigned int VBO, std::vector<float> vector);
-void drawWall(glm::mat4 transform, Shader shader);
+void drawWall(float alpha, glm::mat4 transform, Shader shader);
 void drawBarTop(glm::mat4 transform, Shader shader);
 void drawBarBottom(glm::mat4 transform, Shader shader); glm::mat4 shearY(float k);
 glm::mat4 shearY(float k);
+std::vector<float> jumpTrajectory(float x0, float y0, float xf, float yf, float tf, float alpha);
 
 // Function to create and draw a filled ellipse (of the form (x/a)^2 + (y/b)^2 = 1) centered at (x,y)
 void drawFilledEllipse(float a, float b, float x, float y, int numSegments, glm::mat4 transform, Shader shader) {
@@ -320,7 +321,7 @@ void bindAnimVector(unsigned int VAO, unsigned int VBO, std::vector<float> vecto
 
 
 // Draws the wall
-// If alpha = 0, the wall is opne, if alpha = 1, it is closed and every step in between
+// If alpha = 0, the wall is open, if alpha = 1, it is closed and every step in between
 void drawWall(float alpha, glm::mat4 transform, Shader shader) {
 
     float vertices[] = {
@@ -467,4 +468,27 @@ glm::mat4 shearY(float k) {
     glm::mat4 shearMatrix = glm::mat4(1.0f); // Matriz identidad
     shearMatrix[1][0] = k; // Modificar el elemento para inclinacion en Y respecto a X
     return shearMatrix;
+}
+
+
+// Function that, given an initial position (x0,y0), a final position(xf, yf) and the time the whole parabolic shot takes (tf)  and an alpha between zero and 1, returns the correspondind point in the trayectory at time (t=alpha*tf)
+std::vector<float> jumpTrajectory(float x0, float y0, float xf, float yf, float tf, float alpha) {
+    // Ensure alpha is between 0 and 1 for a valid time scale
+    if (alpha < 0.0f) alpha = 0.0f;
+    if (alpha > 1.0f) alpha = 1.0f;
+
+    // Calculate the time point at which we want the position
+    float t = alpha * tf;
+
+    // Horizontal position (linear interpolation)
+    float x = x0 + (xf - x0) / tf * t;
+
+    // Initial vertical velocity needed to reach yf at tf
+    float g = 9.81f; // Gravitational acceleration
+    float vy0 = (yf - y0 + 0.5f * g * tf * tf) / tf;
+
+    // Vertical position (parabolic path)
+    float y = y0 + vy0 * t - 0.5f * g * t * t;
+
+    return { x, y , 0.0f};
 }
