@@ -26,6 +26,7 @@ void drawBarTop(glm::mat4 transform, Shader shader);
 void drawBarBottom(glm::mat4 transform, Shader shader); glm::mat4 shearY(float k);
 glm::mat4 shearY(float k);
 std::vector<float> jumpTrajectory(float x0, float y0, float xf, float yf, float tf, float alpha);
+std::vector<float> getTranslateToCirc(float x0, float y0, float xc, float yc, float r, float t);
 
 // Function to create and draw a filled ellipse (of the form (x/a)^2 + (y/b)^2 = 1) centered at (x,y)
 void drawFilledEllipse(float a, float b, float x, float y, int numSegments, glm::mat4 transform, Shader shader) {
@@ -332,8 +333,8 @@ void drawWall(float alpha, glm::mat4 transform, Shader shader) {
         // 2nd
          -1.0f, -0.6f, 0.0f,
         -1.0f, -0.35f, 0.0f,
-        -0.15f * (1 - alpha) + 0.15f * alpha, -0.6f, 0.0f,
-        -0.15f * (1 - alpha) + 0.15f * alpha, -0.35f, 0.0f
+        -0.25f * (1 - alpha) + 0.15f * alpha, -0.6f, 0.0f,
+        -0.25f * (1 - alpha) + 0.15f * alpha, -0.35f, 0.0f
     };
 
     unsigned int indices[] = {
@@ -491,4 +492,14 @@ std::vector<float> jumpTrajectory(float x0, float y0, float xf, float yf, float 
     float y = y0 + vy0 * t - 0.5f * g * t * t;
 
     return { x, y , 0.0f};
+}
+
+// Function that returns the translate needed to position an object in (x0, y0, 0) to a point in time t in a circunference with center (xc, yc) with radius r 
+// given that it takes one second (t=1) to fully travel the circunference, the object travels clockwise starting from angle pi * 3/2 
+std::vector<float> getTranslateToCirc(float x0, float y0, float xc, float yc, float r, float t) {
+    float angle = glm::pi<float>() * 3 / 2.0f - t * 2 * glm::pi<float>();
+    float x = r * cos(angle) + xc;
+    float y = r * sin(angle) + yc;
+
+    return {x-x0, y-y0, 0.0f};
 }

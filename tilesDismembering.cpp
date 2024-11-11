@@ -26,7 +26,7 @@ void dismemberTile(GLFWwindow* window, bool reverse) {
     int totalVertices = numTriangles * 3;
     int numCharacters = 3;
     bool animEnded = false;
-    bool waitOver;
+    bool waitOver = false;
     float alpha;
     int ratio = totalVertices / (3.0f * numOutTriangles);
     int index;
@@ -95,9 +95,9 @@ void dismemberTile(GLFWwindow* window, bool reverse) {
         // 2nd
         -0.8f, 0.6f, 0.0f,    -1.0f, -0.6f, 0.0f,
         -1.0f, 0.8f, 0.0f,    -1.0f, -0.35f, 0.0f,
-        -0.6f, 1.0f, 0.0f,    -0.15f, -0.6f, 0.0f,
-        -0.6f, 0.8f, 0.0f,    -0.15f, -0.6f, 0.0f,
-        -0.8f, 1.0f, 0.0f,    -0.15f, -0.35f, 0.0f,
+        -0.6f, 1.0f, 0.0f,    -0.25f, -0.6f, 0.0f,
+        -0.6f, 0.8f, 0.0f,    -0.25f, -0.6f, 0.0f,
+        -0.8f, 1.0f, 0.0f,    -0.25f, -0.35f, 0.0f,
         -1.0f, 0.6f, 0.0f,    -1.0f, -0.35f, 0.0f
     };
     topBar = {
@@ -141,29 +141,38 @@ void dismemberTile(GLFWwindow* window, bool reverse) {
         alpha = 1.0f;
     }
 
-    // Show the start for a couple of miliseconds
-    glClearColor(43 / 255.0f, 36 / 255.0f, 80 / 255.0f, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT);
+    if (!reverse) {
+        // Show the start for a couple of miliseconds
+        glClearColor(43 / 255.0f, 36 / 255.0f, 80 / 255.0f, 1.0f);
+        glClear(GL_COLOR_BUFFER_BIT);
 
-    transformShader.use();
-    drawFerrisWheel(0, 0, 0.8, glm::mat4(1.0f), transformShader);
-    animShader.use();
-    animShader.setFloat("alpha", alpha);
-    glBindVertexArray(VAOs[0]);
-    glDrawArrays(GL_TRIANGLES, 0, totalVertices * 3);
-    glBindVertexArray(VAOs[1]);
-    glDrawArrays(GL_TRIANGLES, 0, 72);
-    glBindVertexArray(VAOs[2]);
-    glDrawArrays(GL_TRIANGLES, 0, 36);
-    glBindVertexArray(VAOs[3]);
-    glDrawArrays(GL_TRIANGLES, 0, 36);
-    glfwSwapBuffers(window);
-    waitOver = false;
-    while (!waitOver && !glfwWindowShouldClose(window)) {
-        if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) {
-            waitOver = true;
+        transformShader.use();
+        drawFerrisWheel(0, 0, 0.8, glm::mat4(1.0f), transformShader);
+        animShader.use();
+        animShader.setFloat("alpha", alpha);
+        glBindVertexArray(VAOs[0]);
+        glDrawArrays(GL_TRIANGLES, 0, totalVertices * 3);
+        glBindVertexArray(VAOs[1]);
+        glDrawArrays(GL_TRIANGLES, 0, 72);
+        glBindVertexArray(VAOs[2]);
+        glDrawArrays(GL_TRIANGLES, 0, 36);
+        glBindVertexArray(VAOs[3]);
+        glDrawArrays(GL_TRIANGLES, 0, 36);
+        glfwSwapBuffers(window);
+        while (!waitOver && !glfwWindowShouldClose(window)) {
+            // Set up animation
+            ftime(&end);
+            t2 = end.millitm;
+            elapse = t2 - t1;
+            if (elapse > 20) {
+                t1 = t2;
+                alpha += 0.01;
+            }
+            if (alpha > 0.5f)
+                waitOver = true;
+            glfwPollEvents();
         }
-        glfwPollEvents();
+        alpha = 0.0f;
     }
 
     // Animate
