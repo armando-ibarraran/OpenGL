@@ -26,8 +26,8 @@ void drawScene3(GLFWwindow* window);
 void drawScene4(GLFWwindow* window);
 
 // settings
-const unsigned int SCR_WIDTH = 600;
-const unsigned int SCR_HEIGHT = 600;
+const unsigned int SCR_WIDTH = 1080;
+const unsigned int SCR_HEIGHT = 1080;
 
 
 

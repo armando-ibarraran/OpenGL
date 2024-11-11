@@ -26,7 +26,7 @@ void dismemberTile(GLFWwindow* window, bool reverse) {
     int totalVertices = numTriangles * 3;
     int numCharacters = 3;
     bool animEnded = false;
-    bool waitOver = false;
+    bool waitOver;
     float alpha;
     int ratio = totalVertices / (3.0f * numOutTriangles);
     int index;
@@ -159,18 +159,18 @@ void dismemberTile(GLFWwindow* window, bool reverse) {
         glBindVertexArray(VAOs[3]);
         glDrawArrays(GL_TRIANGLES, 0, 36);
         glfwSwapBuffers(window);
+        waitOver = false;
+   
         while (!waitOver && !glfwWindowShouldClose(window)) {
-            // Set up animation
             ftime(&end);
             t2 = end.millitm;
             elapse = t2 - t1;
             if (elapse > 20) {
                 t1 = t2;
-                alpha += 0.01;
+                alpha += 0.01f;
             }
-            if (alpha > 0.5f)
+            if (alpha > 0.75f)
                 waitOver = true;
-            glfwPollEvents();
         }
         alpha = 0.0f;
     }
